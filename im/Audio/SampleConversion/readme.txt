@@ -1,0 +1,1 @@
+note that samples in this directory are 8 bit signed mono 8Khz

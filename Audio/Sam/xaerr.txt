@@ -1,0 +1,42 @@
+Cross-Assembler 65xx V2.1.6 3 june 2006 (c) 1989-98 by A.Fachat
+65816 opcodes and modes coded by Jolse Maginnis
+Oric C adaptation and debugging by Mickael Pointier
+Clean Linux port by Jean-Yves Lamoureux
+.else
+sam.s(1502):  1022:Syntax error
+loc_A440 
+sam.s(1510):  1027:Label defined error
+loc_A446 
+sam.s(1525):  1029:Label defined error
+locret_A46E 
+sam.s(1608):  1071:Label defined error
+.endif
+sam.s(1612):  1072:Syntax error
+.else
+sam.s(1918):  11a3:Syntax error
+loc_BCC1   
+sam.s(1941):  11b5:Label defined error
+loc_BCC7   
+sam.s(1950):  11bc:Label defined error
+loc_BCD1   
+sam.s(1968):  11c7:Label defined error
+loc_BCD7   
+sam.s(1978):  11cc:Label defined error
+.else
+sam.s(2101):  1216:Syntax error
+soundout3   
+sam.s(2107):  1216:Label defined error
+loc_BC92   
+sam.s(2112):  1219:Label defined error
+loc_BC98   
+sam.s(2122):  1220:Label defined error
+loc_BCA2   
+sam.s(2142):  122e:Label defined error
+loc_BCA8 
+sam.s(2158):  1233:Label defined error
+unknown_param1=loc_BCA8+1
+sam.s(2184):  1246:Label defined error
+.endif
+sam.s(2185):  1246:Syntax error
+sam.s(37):  0804:Label 'zp_11' not defined
+sam.s(38):  0807:Label 'zp_12' not defined
