@@ -53,6 +53,13 @@ title_file
  
 Driver2
 #ifdef TARGET_ORIX
+	; Switch off via
+	; Switch off via2
+	lda #0+32
+	sta $30e
+	lda #0+32+64
+	sta $32e
+	
 ;BRK_TELEMON(XHIRES)
    lda #<title_file ; load ptr of the string (path) 
    ldx #>title_file  
@@ -63,10 +70,10 @@ Driver2
    ldy #$a0 
    sta PTR_READ_DEST        ; From (telemon vars)
    sty PTR_READ_DEST+1
-   lda #<6040               ;  
-   ldy #>6040               ; read 6040 bytes
+   lda #<8000-1              ;  
+   ldy #>8000-1               ; read 6040 bytes
    BRK_TELEMON(XFREAD)      ; launch the read, XFREAD will insert data in PTR_READ_DEST
-
+   
 #endif
 
     sei
@@ -380,8 +387,20 @@ SetTime2Difficulty
 	sta Time_Seconds
 	sta Time_Minutes
 	rts
+
 	
-SetupIRQ	;We only require IRQ for SFX(50Hz) (Relay on Oric booted settings)
+SetupIRQ	
+#ifdef TARGET_ORIX
+
+	lda #<IM_IRQ
+	sta $2fb
+	lda #>IM_IRQ
+	sta $2fc
+
+#else
+
+	
+	;We only require IRQ for SFX(50Hz) (Relay on Oric booted settings)
 	lda #<20000
 	sta VIA_T1LL
 	lda #>20000
@@ -397,12 +416,10 @@ loop1	lda OpcodeData,y
 	dey
 	bpl loop1
 .)
+#endif
 ;	
 ;	
-;	lda #<IM_IRQ
-;	sta SYS_IRQVECTORLO
-;	lda #>IM_IRQ
-;	sta SYS_IRQVECTORHI
+
 	rts
 
 	
@@ -526,11 +543,10 @@ IM_IRQ
 ;#include "TestRoutines.s"
 himem
 #ifdef TARGET_ORIX
- .dsb $A000+6040-*
-#include "Scorepanel.s"
+ .dsb $A000+8000-*
+
 #else 
- .dsb $A000-*
- 
+.dsb $A000-*
 #include "im_title.s"
 #include "Scorepanel.s"
 #endif

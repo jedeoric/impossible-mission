@@ -19,7 +19,10 @@ mkdir Release\orix\usr\bin
 
 echo Generating Orix version 
 
-%osdk%\bin\xa.exe im_title.s -o Release\orix\usr\share\im\title.hrs
+%osdk%\bin\xa.exe im_title.s -o Release\titletop.hrs
+%osdk%\bin\xa.exe Scorepanel.s -o Release\scorepan.hrs
+
+copy Release\titletop.hrs /b + Release\scorepan.hrs Release\orix\usr\share\im\title.hrs
 
 %osdk%\bin\xa.exe %INPUTFN%.s -o Release\orix\im -e Release\telemon-xaerr.txt -l Release\telemon-%INPUTFN%.txt -DTARGET_ORIX
 
