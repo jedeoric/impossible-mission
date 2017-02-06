@@ -1,5 +1,11 @@
 ;Driver.s
 
+#ifdef TARGET_ORIX
+#include "../oric-common/include/asm/telemon.h"
+#include "../oric-common/include/asm/macro_orix.h"
+#include "../oric-common/vars/telemon_vars.inc.asm"
+
+#endif
 #include "CommonDefines.s"
 
  .zero
@@ -7,7 +13,33 @@
 #include "ZeroPage.s"
 
  .text
+
+
+#ifdef TARGET_ORIX
+*=$801-20
+	.byt $01,$00		; non-C64 marker
+;2
+    .byt "o", "r", "i"      ; "o65" MAGIC number :$6f, $36, $35
+	.byt 1			; version
+	;5
+	.byt $00, $00	; mode word mode0, mode1
+	.byt $00, $00		; CPU type
+	.byt $00, $00		; operating system id
+;11
+	.byt $00 ; reserved
+;12	
+	.byt %01001001 ; Auto, direct, data
+;13	
+	.byt <start_adress,>start_adress ; loading adress
+	.byt <EndOfMemory,>EndOfMemory ; end of loading adress
+	.byt <start_adress,>start_adress ; starting adress
+
+start_adress
+*=$801
+#else
 *=$400
+#endif
+
 
 Driver	jmp Driver2
 ;We jump here so we could put page alligned stuff here
@@ -16,7 +48,28 @@ EthanBMPFrameBuffer
 EthanMSKFrameBuffer
  .dsb 69,0	;Set to tallest and widest (tho always 3) bitmap so 3x23
 
-Driver2	sei
+title_file
+.asc "/usr/share/im/title.hrs",0 
+ 
+Driver2
+#ifdef TARGET_ORIX
+;BRK_TELEMON(XHIRES)
+   lda #<title_file ; load ptr of the string (path) 
+   ldx #>title_file  
+   BRK_TELEMON(XOPEN)       ; open
+
+   ; have a look to https://github.com/jedeoric/telemon/blob/master/src/functions/xread.asm    
+   lda #$00                 ; set PTR_READ_DEST to $a000
+   ldy #$a0 
+   sta PTR_READ_DEST        ; From (telemon vars)
+   sty PTR_READ_DEST+1
+   lda #<6040               ;  
+   ldy #>6040               ; read 6040 bytes
+   BRK_TELEMON(XFREAD)      ; launch the read, XFREAD will insert data in PTR_READ_DEST
+
+#endif
+
+    sei
 	ldx #34
 .(
 loop1	lda PatchMemory,x
@@ -472,9 +525,15 @@ IM_IRQ
 
 ;#include "TestRoutines.s"
 himem
+#ifdef TARGET_ORIX
+ .dsb $A000+6040-*
+#include "Scorepanel.s"
+#else 
  .dsb $A000-*
+ 
 #include "im_title.s"
 #include "Scorepanel.s"
+#endif
 ;The area immediately below the scorepanel is a hidden 40 bytes of useful Storage
 BasePitchLo
  .byt <477
@@ -551,3 +610,5 @@ DialPitchA	;The actual number is the FBI Houston Office
  .dsb 4,0	;Spare
 HIRESSwitch	;BFDF
  .byt 28
+EndOfMemory
+

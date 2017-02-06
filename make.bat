@@ -3,7 +3,34 @@ SET STARTADDR=$400
 SET INPUTFN=Driver
 SET OUTTAP=im.tap
 SET AUTOFLAG=1
-c:\osdk\bin\xa.exe %INPUTFN%.s -o final.out -e xaerr.txt -l %INPUTFN%.txt
-c:\osdk\bin\header.exe -a%AUTOFLAG% final.out %OUTTAP% %STARTADDR%
-copy %OUTTAP% c:\emulate\oric\shared /Y
-pause
+
+SET ORICUTRON="..\..\..\oricutron\"
+
+SET ORIGIN_PATH=%CD%
+
+mkdir Release\orix\
+mkdir Release\orix\usr\
+mkdir Release\orix\usr\share\
+mkdir Release\orix\usr\share\im
+mkdir Release\orix\usr\bin
+
+%osdk%\bin\xa.exe %INPUTFN%.s -o Release\final.out -e Release\xaerr.txt -l Release\%INPUTFN%.txt
+%osdk%\bin\header.exe -a%AUTOFLAG% Release\final.out Release\%OUTTAP% %STARTADDR%
+
+echo Generating Orix version 
+
+%osdk%\bin\xa.exe im_title.s -o Release\orix\usr\share\im\title.hrs
+
+%osdk%\bin\xa.exe %INPUTFN%.s -o Release\orix\im -e Release\telemon-xaerr.txt -l Release\telemon-%INPUTFN%.txt -DTARGET_ORIX
+
+
+IF "%1"=="NORUN" GOTO End
+copy release\orix\im ..\..\..\oricutron\usbdrive\bin
+mkdir ..\..\..\oricutron\usbdrive\usr\share\im\
+copy Release\orix\usr\share\im\title.hrs ..\..\..\oricutron\usbdrive\usr\share\im\
+
+cd %ORICUTRON%
+OricutronV4 -mt -d teledisks\stratsed.dsk
+rem Oricutron_ch376V3 -mt -d teledisks\stratsed.dsk
+cd %ORIGIN_PATH%
+:End
